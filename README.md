@@ -9,7 +9,7 @@
 
 **Few-shot learning describes tasks in which an algorithm must make predictions given only a few instances of each class, contrary to standard supervised learning paradigm.** The main objective is to find reliable algorithms that are capable of dealing with data sparsity, class imbalance and noisy/busy environments. Few-shot learning is usually studied using N-way-K-shot classification, where N denotes the number of classes and K the number of examples for each class.
 
-Text in this section is borrowed from [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic)
+> Text in this section is borrowed from [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic)
 
 ## Description
 This repo is the system I developed for the [DCASE 2022 Challenge task 5 few-shot bio-acoustic detection](https://dcase.community/challenge2021/task-few-shot-bioacoustic-event-detection-results).
@@ -22,12 +22,14 @@ This repo is the system I developed for the [DCASE 2022 Challenge task 5 few-sho
 
 > The performance of prototypical network may be outdated on the validation set. For more information about the prototypical network baseline, please refer to [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic).
 
-Our system rank 1st in this challenge. For more information about the result please refer to [this link](https://dcase.community/challenge2022/task-few-shot-bioacoustic-event-detection-results).
+
 ![final](pics/13071656977425_.pic.jpg)
+
+> Our system rank 1st in this challenge. For more information about the result please refer to [this link](https://dcase.community/challenge2022/task-few-shot-bioacoustic-event-detection-results).
 
 ## How to train from scratch
 
-1. Install dependencies
+1. Prepare environment
 
 ```bash
 # clone project
@@ -39,7 +41,7 @@ conda env create -f environment.yml
 conda activate dcase_t5
 ```
 
-2. Prepare training and validation data
+2. Prepare training and validation data. Dataset will be automatically downloaded.
 
 ```bash
 python3 data_preparation.py
@@ -69,10 +71,9 @@ python3 train.py trainer=eval.yaml callbacks=no_early_stop.yaml
 python train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```
 
-- System minimum requirement
-    - Memory >= 16GB
-    - A modern CPU/GPU.
-    - Free disk space >= 25G
+- You can checkout other training options in the train.yaml. 
+
+- System minimum requirement: Memory >= 16GB + A modern CPU/GPU + Free disk space >= 25G.
 
 ## Cite this work
 
