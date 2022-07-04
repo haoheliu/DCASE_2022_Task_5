@@ -76,10 +76,9 @@ python train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```bibtex
 @techreport{Liu2022a,
     Author = "Liu, Haohe and Liu, Xubo and Mei, Xinhao and Kong, Qiuqiang and Wang, Wenwu and Plumbley, Mark D",
-    title = "SURREY SYSTEM FOR DCASE 2022 TASK 5 : FEW-SHOT BIOACOUSTIC EVENT DETECTION WITH SEGMENT-LEVEL METRIC LEARNING Technical Report",
-    institution = "DCASE2022 Challenge",
-    year = "2022",
-    month = "June",
+    title = "SURREY SYSTEM FOR DCASE 2022 TASK 5 : FEW-SHOT BIOACOUSTIC EVENT DETECTION WITH SEGMENT-LEVEL METRIC LEARNING",
+    institution = "DCASE2022 Challenge Technical Report",
+    year = "2022"
 }
 ```
 
