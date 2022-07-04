@@ -20,7 +20,10 @@ This repo is the system I developed for the [DCASE 2022 Challenge task 5 few-sho
 | [Prototypical Network](https://github.com/c4dm/dcase-few-shot-bioacoustic/tree/main/baselines/deep_learning) |      36.34     |    24.96    |     29.59     |
 |       **Proposed**       |      76.28     |    62.56    |     68.74     |
 
-The performance of prototypical network may be outdated on the validation set. For more information about the prototypical network baseline, please refer to [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic).
+> The performance of prototypical network may be outdated on the validation set. For more information about the prototypical network baseline, please refer to [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic).
+
+Our system rank 1st in this challenge. For more information about the result please refer to [this link](https://dcase.community/challenge2022/task-few-shot-bioacoustic-event-detection-results).
+![final](pics/13071656977425_.pic.jpg)
 
 ## How to train from scratch
 
