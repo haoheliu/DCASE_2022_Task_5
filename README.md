@@ -12,7 +12,6 @@
 Text in this section is borrowed from [c4dm/dcase-few-shot-bioacoustic](https://github.com/c4dm/dcase-few-shot-bioacoustic)
 
 ## Description
-
 This repo is the system I developed for the [DCASE 2022 Challenge task 5 few-shot bio-acoustic detection](https://dcase.community/challenge2021/task-few-shot-bioacoustic-event-detection-results).
 
 |        Method        | Precision (%)  | Recall (%)  | F-measure (%) |
@@ -61,19 +60,16 @@ python3 train.py trainer=eval.yaml callbacks=no_early_stop.yaml
 
 ## Other things
 
-There are a lot of config op
-
-Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
-
-```bash
-python train.py experiment=experiment_name.yaml
-```
-
-You can override any parameter from command line like this
+- You can override any parameter from command line like this
 
 ```bash
 python train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```
+
+- System minimum requirement
+    - Memory >= 16GB
+    - A modern CPU/GPU.
+    - Free disk space >= 25G
 
 ## Cite this work
 
