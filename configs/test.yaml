@@ -1,0 +1,82 @@
+# @package _global_
+
+# specify here default evaluation configuration
+defaults:
+  - _self_
+  - datamodule: prototype.yaml
+  - model: protonet.yaml
+  - callbacks: null
+  - logger: wandb_eval.yaml
+  # - logger: null
+  - trainer: default.yaml
+  - log_dir: evaluation.yaml
+
+  - experiment: null
+
+  # enable color logging
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+original_work_dir: ${hydra:runtime.cwd}
+
+data_dir: ${original_work_dir}/data/
+
+print_config: True
+
+ignore_warnings: True
+
+seed: 1234
+
+name: "test"
+
+# passing checkpoint path is necessary
+ckpt_path: null 
+
+set:
+  features: false
+  train: false
+  eval: false
+
+path:
+  # root_dir:  /vol/research/dcase2022/datasets/dcase_task5/Development_Set
+  # train_dir: /vol/research/dcase2022/datasets/dcase_task5/Development_Set/Training_Set
+  # eval_dir:  /vol/research/dcase2022/datasets/dcase_task5/Development_Set/Validation_Set
+  root_dir: /vol/research/dcase2022/datasets/dcase2021/Development_Set
+  train_dir: /vol/research/dcase2022/datasets/dcase2021/Development_Set/Training_Set
+  eval_dir: /vol/research/dcase2022/datasets/dcase2021/Development_Set/Validation_Set
+
+  feat_path: ${path.root_dir}/Features # _new_dataset_old_feature_extraction_method
+  feat_train: ${path.feat_path}/feat_train
+  feat_eval: ${path.feat_path}/feat_eval
+
+features:
+  seg_len: 0.200
+  hop_seg: 0.100
+  eps: 2.220446049250313e-16
+  fmax: 11025
+  fmin: 50
+  sr: 22050
+  n_fft: 1024
+  n_mels: 128
+  hop_mel: 256
+
+train_param:
+  # num_classes: 15
+  sr: 22050
+  seg_len: 0.200
+  n_shot: 5
+  k_way: 5
+  device: cuda
+  lr_rate: 0.001
+  scheduler_gamma: 0.5
+  scheduler_step_size: 10
+  epochs: 50
+  num_episodes: 2000
+  # encoder: Resnet  # Protonet or Resnet
+
+eval_param:
+  samples_neg: 50
+  iterations: 3
+  query_batch_size: 8
+  negative_set_batch_size: 16
+  threshold: 0.5
