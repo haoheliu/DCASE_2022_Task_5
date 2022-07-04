@@ -5,7 +5,7 @@
 
 **Few-shot learning is a highly promising paradigm for sound event detection. It is also an extremely good fit to the needs of users in bioacoustics, in which increasingly large acoustic datasets commonly need to be labelled for events of an identified category** (e.g. species or call-type), even though this category might not be known in other datasets or have any yet-known label. While satisfying user needs, this will also benchmark few-shot learning for the wider domain of sound event detection (SED).
 
-<p align="center"><img src="data/VM.png" alt="figure" width="400"/></p>
+<p align="center"><img src="pics/VM.png" alt="figure" width="400"/></p>
 
 **Few-shot learning describes tasks in which an algorithm must make predictions given only a few instances of each class, contrary to standard supervised learning paradigm.** The main objective is to find reliable algorithms that are capable of dealing with data sparsity, class imbalance and noisy/busy environments. Few-shot learning is usually studied using N-way-K-shot classification, where N denotes the number of classes and K the number of examples for each class.
 
@@ -92,7 +92,7 @@ python train.py trainer.max_epochs=20 datamodule.batch_size=64
 
 1. What a normal training look like.
 
-![pic](data/12821655404104_.pic.jpg)
+![pic](pics/12821655404104_.pic.jpg)
 
 2. The best score I have got on the validation set (with [training log](data/log.txt) downloadable). But may be our model 'overfit' on this particular test set.
 ```bash
