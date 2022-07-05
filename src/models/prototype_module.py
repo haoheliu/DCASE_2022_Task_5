@@ -120,7 +120,7 @@ class PrototypeModule(LightningModule):
         def transform(a,b,c):
             # a,b,c = self.feature_scale_eval(a), self.feature_scale_eval(b), self.feature_scale_eval(c)
             return a[0,...], b[0, ...], c[0, ...]
-        (X_pos, X_neg, X_query, X_pos_neg, X_neg_neg, X_query_neg, hop_seg, hop_seg_neg, max_len, neg_min_length), strt_index_query, audio_name, mask, seg_len = batch        
+        (X_pos, X_neg, X_query, X_pos_neg, X_neg_neg, X_query_neg, hop_seg, hop_seg_neg, max_len, neg_min_length), strt_index_query, audio_name, seg_len = batch        
         X_pos, X_neg, X_query = transform(X_pos, X_neg, X_query)
         X_pos_neg, X_neg_neg, X_query_neg = transform(X_pos_neg, X_neg_neg, X_query_neg)
         hop_seg, hop_seg_neg, strt_index_query, max_len, neg_min_length, seg_len = (
@@ -135,10 +135,10 @@ class PrototypeModule(LightningModule):
         # onset, offset = self.evaluate_prototypes(X_pos, X_neg, X_query, hop_seg, strt_index_query, mask)
         # onset_neg, offset_neg = self.evaluate_prototypes(X_pos_neg, X_neg_neg, X_query_neg, hop_seg_neg, strt_index_query, mask)
         padding_len = seg_len // 2
-        onset_offset = self.evaluate_prototypes(X_pos, X_neg, X_query, hop_seg, strt_index_query, mask, audio_name[0])
+        onset_offset = self.evaluate_prototypes(X_pos, X_neg, X_query, hop_seg, strt_index_query, audio_name[0])
 
         if(self.hparams.train.negative_seg_search):
-            onset_offset_neg = self.evaluate_prototypes(X_pos_neg, X_neg_neg, X_query_neg, hop_seg_neg, strt_index_query, mask, audio_name[0])
+            onset_offset_neg = self.evaluate_prototypes(X_pos_neg, X_neg_neg, X_query_neg, hop_seg_neg, strt_index_query, audio_name[0])
 
         audio_name = os.path.basename(audio_name[0])
 
@@ -703,7 +703,7 @@ class PrototypeModule(LightningModule):
         return torch.cat([x.unsqueeze(1), mask.unsqueeze(1)], axis=1) # concatenate on the channel dimension
     
     def evaluate_prototypes(
-        self, X_pos, X_neg, X_query, hop_seg, strt_index_query=None, mask=None, audio_name=None
+        self, X_pos, X_neg, X_query, hop_seg, strt_index_query=None, audio_name=None
     ):
         X_pos = torch.tensor(X_pos)
         Y_pos = torch.LongTensor(np.zeros(X_pos.shape[0]))

@@ -98,9 +98,11 @@ class PrototypeAdaSeglenBetterNegTestSetV2(Dataset):
         feat_file = self.all_csv_files[idx]
         # print(feat_file)
         X_pos, X_neg, X_query,X_pos_neg, X_neg_neg, X_query_neg, max_len,neg_min_length, strt_index_query, audio_path, hop_seg, hop_seg_neg, mask, seg_len = self.read_file(feat_file)
-        return (X_pos.astype(np.float32), X_neg.astype(np.float32), X_query.astype(np.float32), X_pos_neg.astype(np.float32), X_neg_neg.astype(np.float32), X_query_neg.astype(np.float32), hop_seg,hop_seg_neg, max_len, neg_min_length), strt_index_query, audio_path, mask.astype(np.float32), seg_len
+        return (X_pos.astype(np.float32), X_neg.astype(np.float32), X_query.astype(np.float32), X_pos_neg.astype(np.float32), X_neg_neg.astype(np.float32), X_query_neg.astype(np.float32), hop_seg,hop_seg_neg, max_len, neg_min_length), strt_index_query, audio_path, seg_len
 
     def load_mask(self, class_name):
+        if(self.path.mask_dir is None):
+            return None
         return np.load(os.path.join(self.path.mask_dir, "mask_%s.npy" % class_name))
 
     def find_positive_label(self, df):
@@ -303,6 +305,7 @@ class PrototypeAdaSeglenBetterNegTestSetV2(Dataset):
         # Take the mask here
         key = self.find_positive_label(df_eval)
         mask = self.load_mask(key)
+
         
         Q_list = df_eval[key].to_numpy()
         
