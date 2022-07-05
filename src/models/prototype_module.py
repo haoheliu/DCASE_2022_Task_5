@@ -104,15 +104,14 @@ class PrototypeModule(LightningModule):
         self.log("lr", cur_lr, prog_bar=True, on_step=True, on_epoch=True)
         self.log("train/loss", tr_loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("train/acc", tr_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train/supcon", tr_supcon, on_step=False, on_epoch=True, prog_bar=True)
+        # self.log("train/supcon", tr_supcon, on_step=False, on_epoch=True, prog_bar=True)
         return {"loss": tr_loss + tr_supcon, "acc": tr_acc}
     
     def validation_step(self, batch: Any, batch_idx: int):
-        with torch.no_grad():
-            val_loss, val_acc, val_supcon = self.step(batch, batch_idx)
+        val_loss, val_acc, val_supcon = self.step(batch, batch_idx)
         self.log("val/loss", val_loss, on_step=True, on_epoch=True, prog_bar=True)
         self.log("val/acc", val_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/supcon", val_supcon, on_step=False, on_epoch=True, prog_bar=True)
+        # self.log("val/supcon", val_supcon, on_step=False, on_epoch=True, prog_bar=True)
         return {"val_loss": val_loss + val_supcon, "val_acc": val_acc}
     
     def test_step(self, batch: Any, batch_idx: int):

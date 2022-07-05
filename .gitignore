@@ -8,7 +8,7 @@ png
 
 # C extensions
 *.so
-
+logs*
 # Distribution / packaging
 .Python
 Development_Set*

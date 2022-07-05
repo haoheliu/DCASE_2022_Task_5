@@ -90,7 +90,7 @@ python train.py trainer.max_epochs=20 datamodule.batch_size=64
 
 ![pic](pics/12821655404104_.pic.jpg)
 
-2. The best score I have got on the validation set (with [training log](data/log.txt) downloadable). But may be our model 'overfit' on this particular test set.
+2. The best score I have got on the validation set (with [training log](log.txt) available). But may be our model 'overfit' on this particular test set.
 ```bash
 ******************BEST RESULT*****************
 BUK1_20181011_001004.wav {'TP': 23, 'FP': 15, 'FN': 8, 'total_n_pos_events': 31}
