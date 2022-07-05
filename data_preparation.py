@@ -16,7 +16,7 @@ def recursive_glob(path, suffix):
                                 glob(os.path.join(path,"*/*/*/*/*/*" + suffix))
 
 if(not os.path.exists("Development_Set.zip")):
-    cmd = "wget https://zenodo.org/record/4543504/files/Development_Set.zip?download=1"
+    cmd = "wget https://zenodo.org/record/6482837/files/Development_Set.zip?download=1"
     os.system(cmd)
     os.system("mv Development_Set.zip?download=1 Development_Set.zip")
 
