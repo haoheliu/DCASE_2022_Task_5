@@ -21,5 +21,6 @@ def main(config: DictConfig):
     # Evaluate model
     return test(config)
 
+
 if __name__ == "__main__":
     main()

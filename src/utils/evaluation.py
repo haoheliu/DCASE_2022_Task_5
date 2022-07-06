@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("/vol/research/dcase2022/project/hhlab")
 
 import argparse
@@ -38,9 +39,13 @@ def remove_shots_from_ref(ref_df, number_shots=5):
 def select_events_with_value(data_frame, value=POS_VALUE):
     def find_positive_label(df):
         for col in df.columns:
-            if("Q" in col): return col
+            if "Q" in col:
+                return col
         else:
-            raise ValueError("Error: Expect you change the validation set event name to Q_x")
+            raise ValueError(
+                "Error: Expect you change the validation set event name to Q_x"
+            )
+
     key = find_positive_label(data_frame)
     indexes_list = data_frame.index[data_frame[key] == value].tolist()
     return indexes_list
@@ -53,6 +58,7 @@ def build_matrix_from_selected_rows(data_frame, selected_indexes_list):
         matrix_data[0, n] = data_frame.loc[idx].Starttime  # start time for event n
         matrix_data[1, n] = data_frame.loc[idx].Endtime
     return matrix_data
+
 
 def compute_tp_fp_fn(pred_events_df, ref_events_df):
     # inputs: dataframe with predicted events, dataframe with reference events and their value (POS, UNK, NEG)
@@ -189,6 +195,7 @@ def build_report(
         json.dump(report, outfile)
     return
 
+
 def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metadata=[]):
     individual_file_result = {}
     # print("\nEvaluation for:", team_name, dataset)
@@ -220,7 +227,8 @@ def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metada
 
     counts_per_audiofile = {}
     for audiofilename in list(pred_events_by_audiofile.keys()):
-        if(audiofilename not in inv_gt_file_structure.keys()): continue # Testset or validation set
+        if audiofilename not in inv_gt_file_structure.keys():
+            continue  # Testset or validation set
         # for each audiofile, load correcponding GT File (audiofilename.csv)
         ref_events_this_audiofile_all = pd.read_csv(
             os.path.join(
@@ -249,7 +257,7 @@ def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metada
         }
         # print(audiofilename, counts_per_audiofile[audiofilename])
         individual_file_result[audiofilename] = counts_per_audiofile[audiofilename]
-        
+
     if metadata:
         # using the key for classes => audiofiles,  # load sets metadata:
         with open(metadata) as metadatafile:
@@ -295,7 +303,8 @@ def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metada
     scores_per_set = {}
     scores_per_audiofile = {}
     for data_set in list_sets_in_mainset:
-        if("." == dataset[0]): continue
+        if "." == dataset[0]:
+            continue
 
         if metadata:
             list_classes_in_set = list(dataset_metadata[dataset][data_set].keys())
@@ -406,12 +415,10 @@ def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metada
             [scores_per_set[dt]["recall"] for dt in scores_per_set.keys()]
         ),
         "fmeasure-avg": np.round(
-            np.mean(
-                [scores_per_set[dt]["f-measure"] for dt in scores_per_set.keys()]
-            )
+            np.mean([scores_per_set[dt]["f-measure"] for dt in scores_per_set.keys()])
             * 100,
             3,
-        )
+        ),
     }
 
     print("\nOverall_scores:", overall_scores)
@@ -441,9 +448,9 @@ def evaluate(pred_file_path, ref_file_path, team_name, dataset, savepath, metada
 
 if __name__ == "__main__":
     import pandas as pd
-    
+
     pred_file = "/vol/research/dcase2022/project/hhlab/src/utils/pred.csv"
     ref_files_path = "/vol/research/dcase2022/project/hhlab/src/utils/ref.csv"
-    team_name, dataset, savepath = "TEST","VAL","."
+    team_name, dataset, savepath = "TEST", "VAL", "."
     res = compute_tp_fp_fn(pd.read_csv(pred_file), pd.read_csv(ref_files_path))
     print(res)

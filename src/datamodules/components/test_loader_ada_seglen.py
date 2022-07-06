@@ -31,7 +31,13 @@ def time_2_frame(df, fps):
 
 
 class PrototypeAdaSeglenTestSet(Dataset):
-    def __init__(self, path: dict = {}, features: dict = {}, train_param: dict = {}, eval_param: dict = {}):
+    def __init__(
+        self,
+        path: dict = {},
+        features: dict = {},
+        train_param: dict = {},
+        eval_param: dict = {},
+    ):
         self.path = path
         self.features = features
         self.train_param = train_param
@@ -53,15 +59,29 @@ class PrototypeAdaSeglenTestSet(Dataset):
 
     def __getitem__(self, idx):
         feat_file = self.all_csv_files[idx]
-        X_pos, X_neg, X_query, strt_index_query, audio_path, hop_seg = self.read_file(feat_file)
-        return (X_pos.astype(np.float32), X_neg.astype(np.float32), X_query.astype(np.float32), hop_seg), strt_index_query, audio_path
+        X_pos, X_neg, X_query, strt_index_query, audio_path, hop_seg = self.read_file(
+            feat_file
+        )
+        return (
+            (
+                X_pos.astype(np.float32),
+                X_neg.astype(np.float32),
+                X_query.astype(np.float32),
+                hop_seg,
+            ),
+            strt_index_query,
+            audio_path,
+        )
 
     def find_positive_label(self, df):
         for col in df.columns:
-            if("Q" in col): return col
+            if "Q" in col:
+                return col
         else:
-            raise ValueError("Error: Expect you change the validation set event name to Q_x")
-    
+            raise ValueError(
+                "Error: Expect you change the validation set event name to Q_x"
+            )
+
     def read_file(self, file):
         hop_neg = 0
         hop_query = 0
@@ -75,34 +95,34 @@ class PrototypeAdaSeglenTestSet(Dataset):
         index_sup = np.where(Q_list == "POS")[0][: self.train_param.n_shot]
         #################################Adaptive hop_seg#########################################
         difference = []
-        for index in index_sup: 
+        for index in index_sup:
             difference.append(end_time[index] - start_time[index])
-        # Adaptive segment length based on the audio file. 
+        # Adaptive segment length based on the audio file.
         max_len = max(difference)
         # Choosing the segment length based on the maximum size in the 5-shot.
-        # Logic was based on fitment on 12GB GPU since some segments are quite long. 
+        # Logic was based on fitment on 12GB GPU since some segments are quite long.
         if max_len < 100:
             seg_len = max_len
-        elif max_len > 100 and max_len < 500: 
-            seg_len = max_len//4
+        elif max_len > 100 and max_len < 500:
+            seg_len = max_len // 4
         else:
-            seg_len = max_len//8
+            seg_len = max_len // 8
         print(f"Adaptive segment length for %s is {seg_len}" % (file))
-        hop_seg = seg_len//2
+        hop_seg = seg_len // 2
         #################################################################################
         pcen = self.fe.extract_feature(audio_path)
         strt_indx_query = end_time[index_sup[-1]]
         end_idx_neg = pcen.shape[0] - 1
 
         feat_neg, feat_pos, feat_query = [], [], []
-        
+
         while end_idx_neg - (strt_index + hop_neg) > seg_len:
             patch_neg = pcen[
                 int(strt_index + hop_neg) : int(strt_index + hop_neg + seg_len)
             ]
             feat_neg.append(patch_neg)
             hop_neg += hop_seg
-        
+
         last_patch = pcen[end_idx_neg - seg_len : end_idx_neg]
         feat_neg.append(last_patch)
 
@@ -152,7 +172,7 @@ class PrototypeAdaSeglenTestSet(Dataset):
             np.stack(feat_query),
             strt_indx_query,
             audio_path,
-            hop_seg
+            hop_seg,
         )  # [n, seg_len, 128]
 
 

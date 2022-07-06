@@ -7,7 +7,9 @@ import numpy as np
 from sklearn.preprocessing import minmax_scale
 
 
-def post_processing(val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold_length=0.200):
+def post_processing(
+    val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold_length=0.200
+):
     """Post processing of a prediction file by removing all events that have shorter duration than
     200 ms.
 

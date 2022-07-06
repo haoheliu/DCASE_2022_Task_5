@@ -5,7 +5,9 @@ from collections import OrderedDict
 import logging
 from pathlib import Path
 import re
+
 # from embedding_propagation import EmbeddingPropagation
+
 
 def conv_block(in_channels, out_channels):
 
@@ -15,6 +17,7 @@ def conv_block(in_channels, out_channels):
         nn.ReLU(),
         nn.MaxPool2d(2),
     )
+
 
 class ProtoNet(nn.Module):
     def __init__(self):
@@ -34,11 +37,18 @@ class ProtoNet(nn.Module):
 
         return x.view(x.size(0), -1)
 
+
 def conv3x3(in_planes, out_planes, stride=1, with_bias=False):
     """3x3 convolution with padding"""
     return nn.Conv2d(
-        in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=with_bias # TODO here I change the bias
+        in_planes,
+        out_planes,
+        kernel_size=3,
+        stride=stride,
+        padding=1,
+        bias=with_bias,  # TODO here I change the bias
     )
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -59,7 +69,7 @@ class BasicBlock(nn.Module):
         self.conv1 = conv3x3(inplanes, planes, with_bias=with_bias)
         self.bn1 = nn.BatchNorm2d(planes)
 
-        if(non_linearity == "leaky_relu"):
+        if non_linearity == "leaky_relu":
             self.relu = nn.LeakyReLU(0.1)
         else:
             self.relu = nn.ReLU()
@@ -127,7 +137,7 @@ class ResNet(nn.Module):
             stride=2,
             drop_block=True,
             block_size=dropblock_size,
-            features=features
+            features=features,
         )
         self.layer4 = self._make_layer(
             block,
@@ -135,7 +145,7 @@ class ResNet(nn.Module):
             stride=2,
             drop_block=True,
             block_size=dropblock_size,
-            features=features
+            features=features,
         )
         # if avg_pool:
         #     self.avgpool = nn.AvgPool2d(5, stride=1)
@@ -144,12 +154,22 @@ class ResNet(nn.Module):
         self.keep_avg_pool = avg_pool
         # self.dropout = nn.Dropout(p=1 - self.keep_prob, inplace=False)
         self.drop_rate = drop_rate
-        self.pool_avg = nn.AdaptiveAvgPool2d((features.time_max_pool_dim, int(features.embedding_dim/(features.time_max_pool_dim*64)))) # try max pooling
-        self.pool_max = nn.AdaptiveMaxPool2d((features.time_max_pool_dim, int(features.embedding_dim/(features.time_max_pool_dim*64)))) # try max pooling
+        self.pool_avg = nn.AdaptiveAvgPool2d(
+            (
+                features.time_max_pool_dim,
+                int(features.embedding_dim / (features.time_max_pool_dim * 64)),
+            )
+        )  # try max pooling
+        self.pool_max = nn.AdaptiveMaxPool2d(
+            (
+                features.time_max_pool_dim,
+                int(features.embedding_dim / (features.time_max_pool_dim * 64)),
+            )
+        )  # try max pooling
         # self.ep = EmbeddingPropagation()
-        
+
         # dim = int(features.embedding_dim/(4*64)) * 4 * 64
-        
+
         # self.mapping = nn.Sequential(
         #     nn.Linear(dim, dim*2),
         #     nn.ReLU(),
@@ -159,7 +179,7 @@ class ResNet(nn.Module):
         #     nn.Dropout(self.linear_drop_rate),
         #     nn.Linear(dim*2, dim),
         # )
-        
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
@@ -168,25 +188,31 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-                
+
     def load_weight(self, weight_file, device):
         """Utility to load a weight file to a device."""
         state_dict = torch.load(weight_file, map_location=device)
-        if 'state_dict' in state_dict:
-            state_dict = state_dict['state_dict']
+        if "state_dict" in state_dict:
+            state_dict = state_dict["state_dict"]
         # Remove unneeded prefixes from the keys of parameters.
         weights = {}
         for k in state_dict:
-            m = re.search(r'(^layer1\.|\.layer1\.|^layer2\.|\.layer2\.|^layer3\.|\.layer3\.|^layer4\.|\.layer4\.)', k)
-            if m is None: continue
-            new_k = k[m.start():]
-            new_k = new_k[1:] if new_k[0] == '.' else new_k
+            m = re.search(
+                r"(^layer1\.|\.layer1\.|^layer2\.|\.layer2\.|^layer3\.|\.layer3\.|^layer4\.|\.layer4\.)",
+                k,
+            )
+            if m is None:
+                continue
+            new_k = k[m.start() :]
+            new_k = new_k[1:] if new_k[0] == "." else new_k
             weights[new_k] = state_dict[k]
         self.load_state_dict(weights)
         self.eval()
-        logging.info(f'Using audio embbeding network pretrained weight: {Path(weight_file).name}')
+        logging.info(
+            f"Using audio embbeding network pretrained weight: {Path(weight_file).name}"
+        )
         return self
-    
+
     def _make_layer(
         self, block, planes, stride=1, drop_block=False, block_size=1, features=None
     ):
@@ -214,7 +240,7 @@ class ResNet(nn.Module):
                 drop_block,
                 block_size,
                 features.with_bias,
-                features.non_linearity
+                features.non_linearity,
             )
         )
         self.inplanes = planes * block.expansion
@@ -222,7 +248,7 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         (num_samples, seq_len, mel_bins) = x.shape
-        
+
         # for p in self.layer1.parameters():
         #     p.requires_grad = False
         # self.layer1.eval()
@@ -231,29 +257,30 @@ class ResNet(nn.Module):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        if(self.features.layer_4):
+        if self.features.layer_4:
             x = self.layer4(x)
-        x = self.pool_avg(x) 
-        
+        x = self.pool_avg(x)
+
         x = x.view(x.size(0), -1)
         # x = self.mapping(x)
         return x
+
 
 if __name__ == "__main__":
     from omegaconf import OmegaConf
     from tqdm import tqdm
 
     def get_n_params(model):
-        pp=0
+        pp = 0
         for p in list(model.parameters()):
-            nn=1
+            nn = 1
             for s in list(p.size()):
-                nn = nn*s
+                nn = nn * s
             pp += nn
         return pp
 
     conf = OmegaConf.load("/vol/research/dcase2022/project/hhlab/configs/train.yaml")
-    
+
     model = ResNet(conf.features)
     print(model)
     print(get_n_params(model))

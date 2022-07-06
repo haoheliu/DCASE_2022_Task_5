@@ -31,7 +31,13 @@ def time_2_frame(df, fps):
 
 
 class PrototypeTestSet(Dataset):
-    def __init__(self, path: dict = {}, features: dict = {}, train_param: dict = {}, eval_param: dict = {}):
+    def __init__(
+        self,
+        path: dict = {},
+        features: dict = {},
+        train_param: dict = {},
+        eval_param: dict = {},
+    ):
         self.path = path
         self.features = features
         self.train_param = train_param
@@ -56,14 +62,26 @@ class PrototypeTestSet(Dataset):
         )  # TODO hard hop segment length
         feat_file = self.all_csv_files[idx]
         X_pos, X_neg, X_query, strt_index_query, audio_path = self.read_file(feat_file)
-        return (X_pos.astype(np.float32), X_neg.astype(np.float32), X_query.astype(np.float32), hop_seg), strt_index_query, audio_path
-    
+        return (
+            (
+                X_pos.astype(np.float32),
+                X_neg.astype(np.float32),
+                X_query.astype(np.float32),
+                hop_seg,
+            ),
+            strt_index_query,
+            audio_path,
+        )
+
     def find_positive_label(self, df):
         for col in df.columns:
-            if("Q" in col): return col
+            if "Q" in col:
+                return col
         else:
-            raise ValueError("Error: Expect you change the validation set event name to Q_x")
-        
+            raise ValueError(
+                "Error: Expect you change the validation set event name to Q_x"
+            )
+
     def read_file(self, file):
         seg_len = int(round(self.eval_param.seg_len * self.fps))
         hop_seg = int(
@@ -85,14 +103,14 @@ class PrototypeTestSet(Dataset):
         end_idx_neg = pcen.shape[0] - 1
 
         feat_neg, feat_pos, feat_query = [], [], []
-        
+
         while end_idx_neg - (strt_index + hop_neg) > seg_len:
             patch_neg = pcen[
                 int(strt_index + hop_neg) : int(strt_index + hop_neg + seg_len)
             ]
             feat_neg.append(patch_neg)
             hop_neg += hop_seg
-        
+
         last_patch = pcen[end_idx_neg - seg_len : end_idx_neg]
         feat_neg.append(last_patch)
 

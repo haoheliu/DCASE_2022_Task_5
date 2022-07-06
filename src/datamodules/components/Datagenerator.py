@@ -117,6 +117,7 @@ class Datagen(object):
         X_val = self.feature_scale(X_val)
         return X_train, Y_train, X_val, Y_val
 
+
 class Datagen_test(Datagen):
     def __init__(self, hf, path):
         super(Datagen_test, self).__init__(path=path)
@@ -142,4 +143,4 @@ class Datagen_test(Datagen):
         # X_pos = self.feature_scale(X_pos)
         # X_neg = self.feature_scale(X_neg)
         # X_query = self.feature_scale(X_query)
-        return X_pos, X_neg, X_query, self.hop_seg 
+        return X_pos, X_neg, X_query, self.hop_seg

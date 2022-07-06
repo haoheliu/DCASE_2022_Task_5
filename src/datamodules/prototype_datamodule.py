@@ -63,13 +63,13 @@ class PrototypeDataModule(LightningDataModule):
         from src.datamodules.components import (
             IdentityBatchSampler,
             PrototypeDynamicDataSet,
-            PrototypeDynamicArrayDataSet, # The PCEN training dataset 
-            PrototypeDynamicArrayDataSetVal, # The validation dataset for validation process
-            PrototypeDynamicArrayDataSetWithEval, # Training with the first 5 validation data
+            PrototypeDynamicArrayDataSet,  # The PCEN training dataset
+            PrototypeDynamicArrayDataSetVal,  # The validation dataset for validation process
+            PrototypeDynamicArrayDataSetWithEval,  # Training with the first 5 validation data
         )
-        
+
         # Training dataset
-        if(self.hparams.train_param.use_validation_first_5):
+        if self.hparams.train_param.use_validation_first_5:
             self.dataset = PrototypeDynamicArrayDataSetWithEval(
                 path=self.hparams.path,
                 features=self.hparams.features,
@@ -81,7 +81,7 @@ class PrototypeDataModule(LightningDataModule):
                 features=self.hparams.features,
                 train_param=self.hparams.train_param,
             )
-            
+
         self.sampler = IdentityBatchSampler(
             self.hparams.train_param,
             self.dataset.train_eval_class_idxs,
@@ -95,7 +95,7 @@ class PrototypeDataModule(LightningDataModule):
         self.train_loader = torch.utils.data.DataLoader(
             self.dataset, batch_sampler=self.sampler, num_workers=2
         )
-        
+
         # Validation dataset
         self.val_dataset = PrototypeDynamicArrayDataSetVal(
             path=self.hparams.path,
@@ -115,22 +115,34 @@ class PrototypeDataModule(LightningDataModule):
         self.val_loader = torch.utils.data.DataLoader(
             self.val_dataset, batch_sampler=self.val_sampler, num_workers=2
         )
-        
-        from src.datamodules.components import PrototypeTestSet, PrototypeAdaSeglenTestSet, PrototypeAdaSeglenBetterNegTestSetV2
-        if(self.hparams.train_param.adaptive_seg_len):
-            self.data_test = PrototypeAdaSeglenBetterNegTestSetV2(self.hparams.path, 
-                                                       self.hparams.features, 
-                                                       self.hparams.train_param,
-                                                       self.hparams.eval_param)
+
+        from src.datamodules.components import (
+            PrototypeTestSet,
+            PrototypeAdaSeglenTestSet,
+            PrototypeAdaSeglenBetterNegTestSetV2,
+        )
+
+        if self.hparams.train_param.adaptive_seg_len:
+            self.data_test = PrototypeAdaSeglenBetterNegTestSetV2(
+                self.hparams.path,
+                self.hparams.features,
+                self.hparams.train_param,
+                self.hparams.eval_param,
+            )
         else:
-            self.data_test = PrototypeTestSet(self.hparams.path, self.hparams.features, self.hparams.train_param,self.hparams.eval_param)
+            self.data_test = PrototypeTestSet(
+                self.hparams.path,
+                self.hparams.features,
+                self.hparams.train_param,
+                self.hparams.eval_param,
+            )
 
     def train_dataloader(self):
         return self.train_loader
 
     def val_dataloader(self):
         return self.val_loader
-    
+
     def test_dataloader(self):
         return DataLoader(
             dataset=self.data_test,

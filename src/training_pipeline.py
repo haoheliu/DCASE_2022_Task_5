@@ -47,16 +47,16 @@ def train(config):
     # Init lightning model
     log.info(f"Instantiating model <{config.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(config.model)
-    
+
     load_weight_from = config.train_param.get("load_weight_from")
     if load_weight_from:
-        if(not os.path.isabs(load_weight_from)): 
+        if not os.path.isabs(load_weight_from):
             load_weight_from = os.path.join(
-            hydra.utils.get_original_cwd(), load_weight_from
-        )
+                hydra.utils.get_original_cwd(), load_weight_from
+            )
         model = model.load_from_checkpoint(load_weight_from)
         print("Reload model weights from %s." % load_weight_from)
-        
+
     # Init lightning callbacks
     callbacks: List[Callback] = []
     if "callbacks" in config:
@@ -113,7 +113,9 @@ def train(config):
         if not config.get("train") or config.trainer.get("fast_dev_run"):
             ckpt_path = None
         log.info("Starting testing!")
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path, verbose=False)
+        trainer.test(
+            model=model, datamodule=datamodule, ckpt_path=ckpt_path, verbose=False
+        )
 
     # Make sure everything closed properly
     log.info("Finalizing!")

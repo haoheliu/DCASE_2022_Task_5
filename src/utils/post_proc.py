@@ -5,7 +5,9 @@ import os
 import numpy as np
 
 
-def post_processing(val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold=0.6):
+def post_processing(
+    val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold=0.6
+):
     """Post processing of a prediction file by removing all events that have shorter duration than
     60% of the minimum duration of the shots for that audio file.
 
@@ -46,8 +48,9 @@ def post_processing(val_path, evaluation_file, new_evaluation_file, n_shots=5, t
     new_results = [["Audiofilename", "Starttime", "Endtime"]]
     for event in results:
         audiofile = event[0]
-        if(audiofile not in dict_duration.keys()): continue
-        
+        if audiofile not in dict_duration.keys():
+            continue
+
         min_dur = dict_duration[audiofile]
         if float(event[2]) - float(event[1]) >= threshold * min_dur:
             new_results.append(event)
@@ -58,7 +61,10 @@ def post_processing(val_path, evaluation_file, new_evaluation_file, n_shots=5, t
 
     return
 
-def post_processing_remove_short_negative(val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold=0.6):
+
+def post_processing_remove_short_negative(
+    val_path, evaluation_file, new_evaluation_file, n_shots=5, threshold=0.6
+):
     """Post processing of a prediction file by removing all events that have shorter duration than
     60% of the minimum duration of the shots for that audio file.
 
@@ -100,8 +106,9 @@ def post_processing_remove_short_negative(val_path, evaluation_file, new_evaluat
     new_results = [["Audiofilename", "Starttime", "Endtime"]]
     for event in results:
         audiofile = event[0]
-        if(audiofile not in dict_duration.keys()): continue
-        
+        if audiofile not in dict_duration.keys():
+            continue
+
         min_dur = dict_duration[audiofile]
         if float(event[2]) - float(event[1]) >= threshold * min_dur:
             new_results.append(event)

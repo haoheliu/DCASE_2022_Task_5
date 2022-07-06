@@ -16,6 +16,7 @@ from torch.utils.data import Dataset
 from src.datamodules.components.Datagenerator import Datagen_test
 from src.datamodules.components.pcen import Feature_Extractor
 
+
 class PrototypeDynamicDataSet(Dataset):
     def __init__(self, path: dict = {}, features: dict = {}, train_param: dict = {}):
         """_summary_
@@ -79,7 +80,7 @@ class PrototypeDynamicDataSet(Dataset):
             rand_start = np.random.uniform(low=start, high=end - self.seg_len)
             x, _ = librosa.load(
                 fname, sr=None, mono=True, offset=rand_start, duration=self.seg_len
-            ) 
+            )
         assert 10 > abs(
             x.shape[0] - int(self.train_param.sr * self.seg_len)
         ), "%s %s %s %s %s %s" % (
@@ -176,6 +177,7 @@ class PrototypeDynamicDataSet(Dataset):
         label2indx = {label: index for index, label in enumerate(self.classes)}
         y = np.array([label2indx[label] for label in self.classes])
         return {c: idx for c, idx in zip(self.classes, y)}
+
 
 def calculate_mean_std():
     import torch

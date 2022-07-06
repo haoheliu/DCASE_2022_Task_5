@@ -7,11 +7,18 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
+
 class SupConLoss(nn.Module):
     """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
     It also supports the unsupervised contrastive loss in SimCLR"""
-    def __init__(self, temperature=0.07, contrast_mode='all', mode="elucidean",
-                 base_temperature=0.07):
+
+    def __init__(
+        self,
+        temperature=0.07,
+        contrast_mode="all",
+        mode="elucidean",
+        base_temperature=0.07,
+    ):
         super(SupConLoss, self).__init__()
         self.temperature = temperature
         self.mode = mode
@@ -22,7 +29,7 @@ class SupConLoss(nn.Module):
         ret = torch.zeros((mat1.size(0), mat2.size(0))).to(mat1.device)
         for i in range(mat1.size(0)):
             for j in range(mat2.size(0)):
-                ret[i,j] = torch.sqrt(torch.sum((mat1[i]-mat2[j]) ** 2))
+                ret[i, j] = torch.sqrt(torch.sum((mat1[i] - mat2[j]) ** 2))
         return ret
 
     def forward(self, features, labels=None, mask=None):
@@ -38,44 +45,46 @@ class SupConLoss(nn.Module):
         Returns:
             A loss scalar.
         """
-        device = (torch.device('cuda')
-                  if features.is_cuda
-                  else torch.device('cpu'))
+        device = torch.device("cuda") if features.is_cuda else torch.device("cpu")
 
         if len(features.shape) < 3:
-            raise ValueError('`features` needs to be [bsz, n_views, ...],'
-                             'at least 3 dimensions are required')
+            raise ValueError(
+                "`features` needs to be [bsz, n_views, ...],"
+                "at least 3 dimensions are required"
+            )
         if len(features.shape) > 3:
             features = features.view(features.shape[0], features.shape[1], -1)
-        
+
         batch_size = features.shape[0]
         if labels is not None and mask is not None:
-            raise ValueError('Cannot define both `labels` and `mask`')
+            raise ValueError("Cannot define both `labels` and `mask`")
         elif labels is None and mask is None:
             mask = torch.eye(batch_size, dtype=torch.float32).to(device)
         elif labels is not None:
             labels = labels.contiguous().view(-1, 1)
             if labels.shape[0] != batch_size:
-                raise ValueError('Num of labels does not match num of features')
+                raise ValueError("Num of labels does not match num of features")
             mask = torch.eq(labels, labels.T).float().to(device)
         else:
             mask = mask.float().to(device)
 
         contrast_count = features.shape[1]
         contrast_feature = torch.cat(torch.unbind(features, dim=1), dim=0)
-        if self.contrast_mode == 'one':
+        if self.contrast_mode == "one":
             anchor_feature = features[:, 0]
             anchor_count = 1
-        elif self.contrast_mode == 'all':
+        elif self.contrast_mode == "all":
             anchor_feature = contrast_feature
             anchor_count = contrast_count
         else:
-            raise ValueError('Unknown mode: {}'.format(self.contrast_mode))
+            raise ValueError("Unknown mode: {}".format(self.contrast_mode))
 
         # compute logits
         # import ipdb; ipdb.set_trace()
         # anchor_dot_contrast = torch.div(torch.matmul(anchor_feature, contrast_feature.T), self.temperature)
-        anchor_dot_contrast = torch.div(torch.cdist(anchor_feature, contrast_feature, p=2.0), self.temperature)
+        anchor_dot_contrast = torch.div(
+            torch.cdist(anchor_feature, contrast_feature, p=2.0), self.temperature
+        )
         # anchor_dot_contrast = torch.div(self.get_cdist(anchor_feature, contrast_feature), self.temperature)
 
         # for numerical stability
@@ -89,7 +98,7 @@ class SupConLoss(nn.Module):
             torch.ones_like(mask),
             1,
             torch.arange(batch_size * anchor_count).view(-1, 1).to(device),
-            0
+            0,
         )
         mask = mask * logits_mask
 
@@ -101,14 +110,14 @@ class SupConLoss(nn.Module):
         mean_log_prob_pos = (mask * log_prob).sum(1) / mask.sum(1)
 
         # loss
-        loss = - (self.temperature / self.base_temperature) * mean_log_prob_pos
+        loss = -(self.temperature / self.base_temperature) * mean_log_prob_pos
         loss = loss.view(anchor_count, batch_size).mean()
 
         return loss
-    
+
+
 if __name__ == "__main__":
     loss = SupConLoss()
     data = torch.randn((4, 5, 128))
-    label = torch.tensor([1,1,2,2])
+    label = torch.tensor([1, 1, 2, 2])
     print(loss(data, labels=label))
-    
