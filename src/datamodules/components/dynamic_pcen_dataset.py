@@ -59,6 +59,7 @@ class PrototypeDynamicArrayDataSet(Dataset):
         self.classes2int = self.get_class2int()
         self.classes_duration = self.get_class_durations()
         self.train_eval_class_idxs = [self.classes2int[x] for x in self.classes]
+        self.extra_train_class_idxs = []
         # The positive segment within the batch should come from the same segment
         self.segment_buffer = {}
         

@@ -7,8 +7,8 @@ defaults:
   - model: protonet.yaml
   # - model: byol.yaml
   - callbacks: default.yaml
-  # - logger: wandb.yaml
-  - logger: tensorboard.yaml
+  - logger: wandb.yaml
+  # - logger: tensorboard.yaml
   - trainer: default.yaml
   - log_dir: default.yaml
 
@@ -68,17 +68,8 @@ set:
   eval: false
 
 path:
-  
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/updated/filtered_hand/Development_Set_filtered
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT/FT_DCASE2021-ML_268995
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT/FT_DCASE2021-ML_273164
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT/FT_DCASE2021-ML_521435
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT/FT_DCASE2021-ML_72010931
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT/FT_DCASE2021-ML_40509
-  # root_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/dcase_task5_finetuning/FT_PB
-
   # From the log directory
-  root_dir: ../../../../../Development_Set
+  root_dir: /vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5/Development_Set
   train_dir: ${path.root_dir}/Training_Set
   eval_dir: ${path.root_dir}/Validation_Set
   # test_dir: ${path.root_dir}/Test_Set
@@ -86,9 +77,6 @@ path:
   # extra_train_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/audioset_sl_animal_filtered_2.0
   extra_train_dir: null
   mask_dir: null # ./src/datamodules/components/freq_mask
-  # feat_path: ${path.root_dir}/Features_old_dataset_old_features # _new_dataset_old_feature_extraction_method
-  # feat_train: ${path.feat_path}/feat_train
-  # feat_eval: ${path.feat_path}/feat_eval
 
 features:
   eps: 2e-16

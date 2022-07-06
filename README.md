@@ -85,7 +85,6 @@ python train.py trainer.max_epochs=20 datamodule.batch_size=64
 
 ## Supplementary materials
 
-
 1. What a normal training look like.
 
 ![pic](pics/12821655404104_.pic.jpg)

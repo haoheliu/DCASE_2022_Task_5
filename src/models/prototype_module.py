@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5")
 from email.mime import audio
 from re import L
 from typing import Any, List
@@ -254,10 +256,20 @@ class PrototypeModule(LightningModule):
             det_t = pd.read_csv(os.path.join(file), sep="\t")
             psds_eval.add_operating_point(det_t)
         psds = psds_eval.psds(alpha_ct, alpha_st, max_efpr)
-        print(f"\nPSD-Score: {psds.value:.5f}")
+        print(f"\nPSDS-Score: {psds.value:.5f}")
         print("Saving pickle!")
         save_pickle(psds,"psds.pkl")
         plot_psd_roc(psds, filename="roc.png")
+        tpr_vs_fpr, _, tpr_vs_efpr = psds_eval.psd_roc_curves(alpha_ct=alpha_ct)
+        plot_per_class_psd_roc(tpr_vs_fpr, psds_eval.class_names,
+                            title="Per-class TPR-vs-FPR PSDROC",
+                            xlabel="FPR", filename="per_class_1.png")
+        save_pickle(tpr_vs_fpr,"tpr_vs_fpr.pkl")
+        save_pickle(psds_eval.class_names,"class_names.pkl")
+        plot_per_class_psd_roc(tpr_vs_efpr, psds_eval.class_names,
+                            title="Per-class TPR-vs-eFPR PSDROC",
+                            xlabel="eFPR", filename="per_class_2.png")
+        save_pickle(tpr_vs_efpr,"tpr_vs_efpr.pkl")
         self.log("psds", psds.value)
 
     def test_epoch_end(self, outputs: List[Any]):
@@ -597,7 +609,7 @@ class PrototypeModule(LightningModule):
         self.log_result(overall_scores, scores_per_set=scores_per_set, scores_per_audiofile = scores_per_audiofile, name="No_Post")
         
         best_result = None
-        for threshold in np.arange(0.2,0.5,0.1):
+        for threshold in np.arange(0.2,0.6,0.1):
             print("Threshold %s" % threshold)
             team_name = "UoSurrey" + str(threshold)
             new_evaluation_file = "%s/Eval_%s_threshold_ada_postproc_%s.csv" % (alpha, dataset, threshold)
@@ -624,7 +636,7 @@ class PrototypeModule(LightningModule):
         save_path = "%s" % alpha
         
         best_result = None
-        for threshold_length in np.arange(0.1,0.2,0.05):
+        for threshold_length in np.arange(0.05,0.25,0.05):
             team_name = "UoSurrey" + str(threshold_length)
             print("Threshold length %s" % threshold_length)
             new_evaluation_file = "%s/Eval_%s_threshold_fix_length_postproc_%s.csv" % (alpha, dataset, threshold_length)
@@ -773,7 +785,7 @@ class PrototypeModule(LightningModule):
         os.makedirs("prob_comb", exist_ok=True)
         np.save("prob_comb/%s.npy" % filename, np.array(prob_comb))
 
-        thresh_list = np.array([0.5, 0.55, 0.6 , 0.7, 0.8 , 0.85, 0.9, 0.95])
+        thresh_list = np.arange(0,1,0.05)
         onset_offset_ret = {}
         for thresh in thresh_list:
             krn = np.array([1, -1])
@@ -878,3 +890,40 @@ class PrototypeModule(LightningModule):
         y = y.unsqueeze(0).expand(n, m, d)
 
         return -torch.nn.CosineSimilarity(dim=2, eps=1e-6)(x, y)
+
+if __name__ == "__main__":
+
+    def calculate_psds():
+        from glob import glob
+        from psds_eval import (PSDSEval, plot_psd_roc, plot_per_class_psd_roc)
+        dtc_threshold = 0.5
+        gtc_threshold = 0.5
+        cttc_threshold = 0.3
+        alpha_ct = 0.0
+        alpha_st = 0.0
+        max_efpr = 100
+        ground_truth_csv = os.path.join("/vol/research/dcase2022/project/hhlab/src/models/eval_meta/subset_gt.csv")
+        metadata_csv = os.path.join("/vol/research/dcase2022/project/hhlab/src/models/eval_meta/subset_meta.csv")
+        gt_table = pd.read_csv(ground_truth_csv, sep="\t")
+        meta_table = pd.read_csv(metadata_csv, sep="\t")
+        psds_eval = PSDSEval(dtc_threshold, gtc_threshold, cttc_threshold, ground_truth=gt_table, metadata=meta_table)
+        for file in glob("/vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5/logs/experiments/runs/final/2022-07-05_19-25-40/*/PSDS_Eval_*.csv"):
+            det_t = pd.read_csv(os.path.join(file), sep="\t")
+            psds_eval.add_operating_point(det_t)
+            break
+        psds = psds_eval.psds(alpha_ct, alpha_st, max_efpr)
+        print(f"\nPSDS-Score: {psds.value:.5f}")
+        print("Saving pickle!")
+        save_pickle(psds,"psds.pkl")
+        plot_psd_roc(psds, filename="roc.png")
+        tpr_vs_fpr, _, tpr_vs_efpr = psds_eval.psd_roc_curves(alpha_ct=alpha_ct)
+        plot_per_class_psd_roc(tpr_vs_fpr, psds_eval.class_names,
+                            title="Per-class TPR-vs-FPR PSDROC",
+                            xlabel="FPR", filename="per_class_1.png")
+        save_pickle(tpr_vs_fpr,"tpr_vs_fpr.pkl")
+        save_pickle(psds_eval.class_names,"class_names.pkl")
+        plot_per_class_psd_roc(tpr_vs_efpr, psds_eval.class_names,
+                            title="Per-class TPR-vs-eFPR PSDROC",
+                            xlabel="eFPR", filename="per_class_2.png")
+        save_pickle(tpr_vs_efpr,"tpr_vs_efpr.pkl")
+    calculate_psds()
