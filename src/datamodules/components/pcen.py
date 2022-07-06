@@ -28,6 +28,8 @@ class Feature_Extractor:
         self.feature_types = features.feature_types.split("@")
         self.files = []
         for each in audio_path:
+            if(each is not None):
+                assert os.path.exists(each), "Path not found: %s" % each
             print("Looking for data in: ", os.path.abspath(each))
             data = list(recursive_glob(each, ".wav"))
             self.files += data

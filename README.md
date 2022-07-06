@@ -44,7 +44,15 @@ conda activate dcase_t5
 python3 data_preparation.py
 ```
 
-3. Train model with default configuration. The post-processing and evaluation process will be excuted automatically. 
+3. Change the root directory in ./config/train.yaml.
+
+```yaml
+path:
+  root_dir: <your-root-directory>
+#   root_dir: /vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5/
+```
+
+4. Train model with default configuration. The post-processing and evaluation process will be excuted automatically. 
 
 ```bash
 # train on CPU

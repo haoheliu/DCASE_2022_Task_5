@@ -69,9 +69,9 @@ set:
 
 path:
   # From the log directory
-  root_dir: /vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5/Development_Set
-  train_dir: ${path.root_dir}/Training_Set
-  eval_dir: ${path.root_dir}/Validation_Set
+  root_dir: /vol/research/dcase2022/project/t5_open_source/DCASE_2022_Task_5/
+  train_dir: ${path.root_dir}/Development_Set/Training_Set
+  eval_dir: ${path.root_dir}/Development_Set/Validation_Set
   # test_dir: ${path.root_dir}/Test_Set
   test_dir: null
   # extra_train_dir: /vol/research/NOBACKUP/CVSSP/scratch_4weeks/hl01486/dataset/audioset_sl_animal_filtered_2.0
